@@ -1,34 +1,51 @@
-const form = document.getElementById("loginForm");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const togglePasswordButton = document.getElementById("togglePassword");
-const rememberCheckbox = document.getElementById("remember");
-const statusMessage = document.getElementById("formStatus");
+const form = document.getElementById("registerForm");
+const username = document.getElementById("username");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const confirmPassword = document.getElementById("confirmPassword");
+const status = document.getElementById("status");
+const togglePassword = document.getElementById("togglePassword");
 
-const setStatus = (message, tone = "") => {
-  statusMessage.textContent = message;
-  statusMessage.dataset.tone = tone;
-};
+function setStatus(message, tone = "neutral") {
+  status.textContent = message;
+  status.dataset.tone = tone;
+}
 
-togglePasswordButton.addEventListener("click", () => {
-  const isHidden = passwordInput.type === "password";
-  passwordInput.type = isHidden ? "text" : "password";
-  togglePasswordButton.textContent = isHidden ? "Hide" : "Show";
-  togglePasswordButton.setAttribute("aria-pressed", String(isHidden));
+togglePassword.addEventListener("click", () => {
+  const hidden = password.type === "password";
+  password.type = hidden ? "text" : "password";
+  togglePassword.textContent = hidden ? "Hide" : "Show";
 });
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  if (!emailInput.value.trim() || !passwordInput.value.trim()) {
-    setStatus("Please enter both your email and password.", "error");
+  if (!username.value.trim()) {
+    setStatus("Enter a username.", "error");
+    username.focus();
     return;
   }
 
-  setStatus(
-    rememberCheckbox.checked
-      ? "Signed in. We’ll keep you remembered on this device."
-      : "Signed in successfully.",
-    "success"
-  );
+  if (!email.value.trim()) {
+    setStatus("Enter your email address.", "error");
+    email.focus();
+    return;
+  }
+
+  if (!password.value || password.value.length < 6) {
+    setStatus("Password must be at least 6 characters.", "error");
+    password.focus();
+    return;
+  }
+
+  if (confirmPassword.value !== password.value) {
+    setStatus("Passwords do not match.", "error");
+    confirmPassword.focus();
+    return;
+  }
+
+  setStatus(`Creating account for ${username.value.trim()}...`, "success");
+  form.reset();
+  togglePassword.textContent = "Show";
+  password.type = "password";
 });
